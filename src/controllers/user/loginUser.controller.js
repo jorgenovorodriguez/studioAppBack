@@ -1,21 +1,20 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import loginUserQuery from '../../models/user/loginUserQuery.js';
+import { errorMsg } from '../../services/manageError.js';
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res
-            .status(400)
-            .json({ error: 'Email y contraseña son obligatorios' });
+        return errorMsg('Email y contraseña obligatorios', 400);
     }
 
     try {
         const user = await loginUserQuery(email);
 
         if (user.length === 0) {
-            return res.status(401).json({ error: 'Credenciales incorrectas' });
+            return errorMsg('Credenciales incorrectas', 401);
         }
 
         const isValidPassword = await bcrypt.compare(
@@ -24,7 +23,7 @@ const loginUser = async (req, res) => {
         );
 
         if (!isValidPassword) {
-            return res.status(401).json({ error: 'Credenciales incorrectas' });
+            return errorMsg('Credenciales incorrectas', 401);
         }
 
         const token = jwt.sign(
@@ -35,8 +34,7 @@ const loginUser = async (req, res) => {
 
         res.json({ message: 'Sesión iniciada', token });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error en el servidor' });
+        next(error);
     }
 };
 

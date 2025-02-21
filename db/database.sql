@@ -17,8 +17,7 @@ CREATE TABLE IF NOT EXISTS products (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    duration INT NOT NULL COMMENT 'Duración en minutos',
+    duration INT NOT NULL COMMENT 'Duración en horas',
     createdAt DATETIME NOT NULL DEFAULT NOW()
 );
 
@@ -28,6 +27,7 @@ CREATE TABLE IF NOT EXISTS products (
     productId INT UNSIGNED NOT NULL,
     startTime DATETIME NOT NULL,
     endTime DATETIME NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
     status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
     createdAt DATETIME NOT NULL DEFAULT NOW(),
     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
